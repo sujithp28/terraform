@@ -20,3 +20,7 @@ terraform {
 provider "aws" {
   region = "us-west-2"
 }
+
+# ~(tilda) 3.0 allows any version in the 3.x series, but not 4.0 or later(prod allowed)
+#  >= 3.0 allows 3.0 and later, including 4.0 and later
+
