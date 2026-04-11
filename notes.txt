@@ -1,0 +1,310 @@
+# 📘 Terraform Notes (With Code Examples)
+
+---
+
+## 🔹 1. Terraform Block
+
+The `terraform {}` block is used to define:
+
+* Terraform version
+* Required providers
+
+### ✅ Example:
+
+```hcl
+terraform {
+  required_version = ">= 0.12"
+}
+```
+
+👉 Meaning:
+
+* Terraform CLI version must be **0.12 or higher**
+
+---
+
+## 🔹 2. Required Providers
+
+This tells Terraform which providers to download.
+
+### ✅ Example:
+
+```hcl
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.0"
+    }
+  }
+}
+```
+
+👉 Meaning:
+
+* Use AWS provider
+* Download from HashiCorp
+* Use version **3.x only**
+
+---
+
+## 🔹 3. Provider Block
+
+Used to configure the provider (like region, credentials)
+
+### ✅ Example:
+
+```hcl
+provider "aws" {
+  region = "us-west-2"
+}
+```
+
+👉 Meaning:
+
+* Create resources in **us-west-2 region**
+
+---
+
+## 🔹 4. Version Constraints
+
+### ✅ "~> 3.0" (Best Practice)
+
+```hcl
+version = "~> 3.0"
+```
+
+👉 Meaning:
+
+* Use:
+
+  * 3.0, 3.1, 3.5
+* Do NOT use:
+
+  * 4.0
+
+---
+
+### ⚠️ ">= 3.0"
+
+```hcl
+version = ">= 3.0"
+```
+
+👉 Meaning:
+
+* Allows:
+
+  * 3.x, 4.x, 5.x
+* Risk:
+
+  * Breaking changes
+
+---
+
+### ❌ Exact Version
+
+```hcl
+version = "3.0"
+```
+
+👉 Meaning:
+
+* Only version 3.0
+* No flexibility
+
+---
+
+## 🔹 5. Multiple Providers Example
+
+```hcl
+terraform {
+  required_providers {
+
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.0"
+    }
+
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
+  }
+}
+```
+
+👉 Meaning:
+
+* AWS → create cloud resources
+* Random → generate unique values
+
+---
+
+## 🔹 6. Random Provider Usage
+
+```hcl
+resource "random_string" "name" {
+  length  = 5
+  special = false
+}
+```
+
+👉 Output example:
+
+```
+abcde
+```
+
+---
+
+## 🔹 7. Using Random Value in AWS Resource
+
+```hcl
+resource "aws_s3_bucket" "bucket" {
+  bucket = "my-bucket-${random_string.name.result}"
+}
+```
+
+👉 Example bucket name:
+
+```
+my-bucket-abcde
+```
+
+---
+
+## 🔹 8. Basic Terraform Terms
+
+### Block
+
+```hcl
+terraform { }
+```
+
+👉 A section of code
+
+---
+
+### Argument
+
+```hcl
+version = "3.0"
+```
+
+👉 Key = value
+
+---
+
+### String
+
+```hcl
+"aws"
+```
+
+👉 Text inside quotes
+
+---
+
+### List
+
+```hcl
+["aws", "random"]
+```
+
+👉 Multiple values
+
+---
+
+### Map
+
+```hcl
+{
+  name = "aws"
+  version = "3.0"
+}
+```
+
+👉 Key-value pairs
+
+---
+
+## 🔹 9. Terraform Commands
+
+### Initialize
+
+```bash
+terraform init
+```
+
+👉 Downloads providers
+
+---
+
+### Plan
+
+```bash
+terraform plan
+```
+
+👉 Shows what will be created
+
+---
+
+### Apply
+
+```bash
+terraform apply
+```
+
+👉 Creates resources
+
+---
+
+## 🔹 10. Important Rules
+
+✅ Provider name must match:
+
+```hcl
+required_providers → aws
+provider block     → aws
+```
+
+❌ Wrong:
+
+```hcl
+provider "aws-prod" { }
+```
+
+---
+
+## 🔹 11. Best Practices
+
+* Always define provider version
+* Use "~>" for safe updates
+* Do not hardcode values (use variables later)
+* Keep code clean, notes separate
+
+---
+
+## 🔹 12. Simple Flow
+
+1. Write code
+2. Run:
+
+   ```bash
+   terraform init
+   terraform plan
+   terraform apply
+   ```
+3. Infrastructure will be created
+
+---
+
+## ✅ Final Summary
+
+* Terraform = Infrastructure as Code
+* Provider = connects to cloud (AWS)
+* Resource = actual infra (EC2, S3)
+* "~>" = safe version control
+* Clean code + separate notes = best practice
