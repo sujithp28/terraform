@@ -17,7 +17,7 @@ The `main` branch contains this overview only.
 
 | Branch | Module | Description | Status |
 |---|---|---|---|
-| [`https://github.com/sujithp28/terraform/tree/terraform-vpc`](#) | 🌐 AWS VPC | VPC, Subnets, IGW, NAT, Security Groups | ✅ Ready |
+| [`https://github.com/sujithp28/terraform/tree/feature/terraform-vpc`](#) | 🌐 AWS VPC | VPC, Subnets, IGW, NAT, Security Groups | ✅ Ready |
 | [`feature/eks`](#) | ☸️ Amazon EKS | EKS Cluster, Node Groups, IAM Roles | 🚧 In Progress |
 | [`feature/jenkins-cicd`](#) | ⚙️ Jenkins CI/CD | Jenkins on EC2, Pipeline as Code | 🚧 In Progress |
 | [`feature/monitoring`](#) | 📊 Monitoring | Dynatrace + CloudWatch Dashboards & Alerts | 🔜 Planned |
