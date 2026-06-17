@@ -61,7 +61,7 @@ Each branch is a standalone, deployable Terraform module.
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/sujithp28/terraform-aws-infrastructure.git
+git clone https://github.com/sujithp28/terraform.git
 cd terraform-aws-infrastructure
 
 # 2. Switch to the module branch you want
