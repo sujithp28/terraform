@@ -1,0 +1,39 @@
+# Terraform state files
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Terraform lock file (keep this in version control)
+# .terraform.lock.hcl
+
+# Terraform working directory
+.terraform/
+
+# Crash log files
+crash.log
+crash.*.log
+
+# Terraform variable files with sensitive data
+*.tfvars
+*.tfvars.json
+!example.tfvars
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# AWS credentials — NEVER commit these
+.aws/
+credentials
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
