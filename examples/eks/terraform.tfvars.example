@@ -1,0 +1,53 @@
+aws_region    = "us-east-1"
+project_name  = "myproject"
+environment   = "production"
+
+# VPC Configuration - Update with your actual VPC and subnet IDs
+vpc_id             = "vpc-xxxxxxxxx"
+private_subnet_ids = [
+  "subnet-xxxxxxxxx",
+  "subnet-yyyyyyyyy",
+  "subnet-zzzzzzzzz"
+]
+
+kubernetes_version = "1.29"
+
+# System Node Group Configuration
+system_desired_size   = 3
+system_min_size       = 3
+system_max_size       = 10
+system_instance_types = ["t3.medium", "t3a.medium"]
+
+# Application Node Group Configuration
+enable_application_node_group = true
+application_desired_size      = 3
+application_min_size          = 1
+application_max_size          = 20
+application_instance_types    = ["t3.large", "t3a.large"]
+
+# GPU Node Group Configuration (optional)
+enable_gpu_node_group = false
+gpu_desired_size      = 0
+gpu_min_size          = 0
+gpu_max_size          = 5
+gpu_instance_types    = ["g4dn.xlarge"]
+
+# API Endpoint Configuration
+endpoint_private_access           = true
+endpoint_public_access            = false
+public_access_cidrs               = []
+cluster_endpoint_private_access_cidrs = ["0.0.0.0/0"]
+
+# Logging Configuration
+cluster_enabled_log_types    = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+cluster_log_retention_in_days = 30
+
+# Add-ons
+enable_efs_csi_driver = false
+
+# Tags
+tags = {
+  Environment = "production"
+  Team        = "platform"
+  CostCenter  = "engineering"
+}
