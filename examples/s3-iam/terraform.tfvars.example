@@ -1,0 +1,23 @@
+aws_region         = "us-east-1"
+environment        = "prod"
+project            = "myapp"
+owner              = "platform-team"
+bucket_name        = "myapp-prod-artifacts-123456"   # must be globally unique
+enable_versioning  = true
+enable_replication = false
+
+iam_roles = {
+  "myapp-app-role" = {
+    description         = "Application runtime role"
+    trusted_services    = ["ec2.amazonaws.com"]
+    managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"]
+  }
+  "myapp-cicd-role" = {
+    description         = "CI/CD pipeline role"
+    trusted_services    = ["codebuild.amazonaws.com"]
+    managed_policy_arns = [
+      "arn:aws:iam::aws:policy/AmazonECR_FullAccess",
+      "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+    ]
+  }
+}
