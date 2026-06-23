@@ -1,0 +1,6 @@
+aws_region       = "us-east-1"
+environment      = "prod"
+project          = "myapp"
+alarm_email      = "alerts@yourcompany.com"
+eks_cluster_name = "myapp-eks-cluster"   # optional
+rds_instance_id  = "myapp-prod-mysql"    # optional
