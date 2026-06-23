@@ -1,0 +1,105 @@
+# ============================================================
+# RDS Module - Configuration Template
+# Copy to terraform.tfvars and fill in your values.
+# NEVER commit terraform.tfvars to version control.
+# ============================================================
+
+aws_region  = "us-east-1"
+environment = "dev"      # dev | staging | prod
+project     = "myapp"
+
+# ----------------------------
+# Instance
+# ----------------------------
+
+db_identifier  = "myapp-db"
+engine         = "mysql"     # mysql | postgres
+engine_version = "8.0"       # mysql: "8.0" | postgres: "15"
+instance_class = "db.t3.small"
+
+# Storage
+allocated_storage     = 20
+max_allocated_storage = 100   # Set to 0 to disable autoscaling
+storage_type          = "gp3" # gp2 | gp3 | io1
+
+# ----------------------------
+# Credentials  (use env vars or Secrets Manager in prod)
+# ----------------------------
+
+db_name         = "appdb"
+master_username = "admin"
+master_password = "CHANGE_ME_use_a_strong_password_here!"
+
+# ----------------------------
+# Networking
+# ----------------------------
+
+vpc_id             = "vpc-0123456789abcdef0"
+private_subnet_ids = ["subnet-aaa111", "subnet-bbb222", "subnet-ccc333"]
+
+# Allow connections from your app's security group:
+allowed_security_group_ids = ["sg-your-app-sg-id"]
+
+# Or from specific CIDRs (e.g. VPC CIDR):
+# allowed_cidr_blocks = ["10.0.0.0/16"]
+
+# ----------------------------
+# High Availability
+# ----------------------------
+
+multi_az            = false  # Set true for staging/prod
+create_read_replica = false  # Set true to add a read replica
+
+# ----------------------------
+# Backup
+# ----------------------------
+
+backup_retention_period   = 7                # days (0-35)
+backup_window             = "03:00-04:00"    # UTC
+maintenance_window        = "Mon:04:00-Mon:05:00"
+skip_final_snapshot       = true             # Set false for staging/prod
+# final_snapshot_identifier = "myapp-db-final" # Uncomment when skip=false
+
+# ----------------------------
+# Security
+# ----------------------------
+
+storage_encrypted   = true
+deletion_protection = false  # Set true for prod
+
+# ----------------------------
+# Monitoring
+# ----------------------------
+
+monitoring_interval          = 60   # seconds (0=disabled, 60=max)
+performance_insights_enabled = true
+
+# ----------------------------
+# Engine Parameters (optional)
+# ----------------------------
+
+# MySQL example:
+# parameters = [
+#   { name = "max_connections",          value = "200" },
+#   { name = "slow_query_log",           value = "1" },
+#   { name = "long_query_time",          value = "2" },
+#   { name = "innodb_buffer_pool_size",  value = "{DBInstanceClassMemory*3/4}", apply_method = "pending-reboot" },
+# ]
+
+# PostgreSQL example:
+# parameters = [
+#   { name = "max_connections",       value = "200",  apply_method = "pending-reboot" },
+#   { name = "log_min_duration_statement", value = "2000" },
+#   { name = "shared_preload_libraries",   value = "pg_stat_statements", apply_method = "pending-reboot" },
+# ]
+
+parameters = []
+
+# ----------------------------
+# Tags
+# ----------------------------
+
+tags = {
+  Owner      = "platform-team"
+  CostCenter = "engineering"
+}
