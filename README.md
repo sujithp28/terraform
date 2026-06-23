@@ -93,7 +93,7 @@ Each infrastructure module lives in its own branch. The `master` branch contains
 |--------|--------|-------------|--------|------|
 | `feature/vpc` | 🌐 AWS VPC | VPC, Subnets, IGW, NAT, Security Groups, Route Tables | ✅ Ready | [View Branch](https://github.com/sujithp28/terraform-aws-infrastructure/tree/feature/vpc) |
 | `feature/eks` | ☸️ Amazon EKS | EKS Cluster, Node Groups, IAM Roles, Add-ons, Security | ✅ Ready | [View Branch](https://github.com/sujithp28/terraform-aws-infrastructure/tree/feature/eks) |
-| `feature/rds` | 🗄️ AWS RDS | RDS MySQL/PostgreSQL, Multi-AZ, Backup, Security Groups | 🚧 In Progress | [View Branch](https://github.com/sujithp28/terraform-aws-infrastructure/tree/feature/rds) |
+| `feature/rds` | 🗄️ AWS RDS | RDS MySQL/PostgreSQL, Multi-AZ, Backup, Security Groups | ✅ Ready | [View Branch](https://github.com/sujithp28/terraform-aws-infrastructure/tree/feature/rds) |
 | `feature/jenkins-cicd` | ⚙️ Jenkins CI/CD | Jenkins EC2, Pipeline as Code, Docker Integration | 🚧 In Progress | [View Branch](https://github.com/sujithp28/terraform-aws-infrastructure/tree/feature/jenkins-cicd) |
 | `feature/monitoring` | 📊 Monitoring | Dynatrace + CloudWatch, Dashboards, Alerts, Metrics | 🔜 Planned | Coming Soon |
 | `feature/s3-iam` | 🔐 S3 & IAM | S3 Buckets, IAM Roles, Policies, Bucket Versioning | 🔜 Planned | Coming Soon |
@@ -102,24 +102,25 @@ Each infrastructure module lives in its own branch. The `master` branch contains
 
 ## 📊 Project Status
 
-### Overall Progress: **40% Complete**
+### Overall Progress: **60% Complete**
 
 | Component | Status | Version | Last Updated |
 |-----------|--------|---------|--------------|
 | VPC Module | ✅ Ready | v1.0.0 | 2026-06-18 |
 | EKS Module | ✅ Ready | v1.0.0 | 2026-06-18 |
-| RDS Module | 🚧 In Progress | v0.5.0 | 2026-06-15 |
+| RDS Module | ✅ Ready | v1.0.0 | 2026-06-23 |
 | Jenkins Module | 🚧 In Progress | v0.5.0 | 2026-06-10 |
 | Monitoring | 🔜 Planned | - | - |
 | S3 & IAM | 🔜 Planned | - | - |
 
 ### Recent Updates
 
+- ✅ **2026-06-23**: Added production-grade RDS module (MySQL & PostgreSQL, Multi-AZ, read replicas, CloudWatch alarms)
+- ✅ **2026-06-23**: Created RDS IMPLEMENTATION_GUIDE.md and complete examples
 - ✅ **2026-06-18**: Added production-grade EKS module with complete documentation
 - ✅ **2026-06-18**: Created comprehensive IMPLEMENTATION_GUIDE.md
 - ✅ **2026-06-18**: Added EKS add-ons configuration (VPC CNI, EBS CSI, CoreDNS)
 - ✅ **2026-06-17**: Initial VPC module with multi-AZ support
-- 📋 **2026-06-20**: Planning RDS module with backup strategy
 
 ---
 
@@ -203,15 +204,18 @@ Each infrastructure module lives in its own branch. The `master` branch contains
   - Configurable log retention
 - **OIDC provider** for IAM roles for service accounts
 
-### 🗄️ RDS Module (In Progress)
-- Multi-AZ RDS instances
-- MySQL & PostgreSQL support
-- Automated backups with configurable retention
-- Enhanced monitoring
-- Parameter groups and option groups
-- Subnet groups for multi-AZ deployment
-- Security group management
-- Read replicas support
+### 🗄️ RDS Module
+- **Multi-engine support**: MySQL 8.0 and PostgreSQL 15
+- **Multi-AZ deployment** for high availability and automatic failover
+- **Read replicas** for horizontal read scaling
+- **Storage autoscaling** up to configurable maximum
+- **KMS encryption** at rest (default or custom key)
+- **Enhanced monitoring** with per-process metrics (1–60s intervals)
+- **Performance Insights** for query-level analysis
+- **CloudWatch Alarms**: CPU, free storage, free memory, connection count
+- **Custom parameter groups** per engine (MySQL & PostgreSQL)
+- **Option groups** for MySQL-specific features
+- **Security groups** with CIDR and SG-based ingress rules
 
 ### ⚙️ Jenkins CI/CD Module (In Progress)
 - Jenkins EC2 instance deployment
@@ -238,7 +242,7 @@ Each infrastructure module lives in its own branch. The `master` branch contains
 
 - ✅ Active AWS account with billing enabled
 - ✅ IAM user/role with appropriate permissions
-- ✅ VPC with 2-3 private subnets (for EKS)
+- ✅ VPC with 2-3 private subnets (for EKS/RDS)
 - ✅ NAT Gateway configured
 - ✅ Internet Gateway attached
 
@@ -355,7 +359,11 @@ terraform-aws-infrastructure/
 │   │   └── README.md
 │   │
 │   ├── rds/
-│   │   └── ... (coming soon)
+│   │   ├── main.tf                    # RDS instance, SG, parameter group, alarms
+│   │   ├── variables.tf               # Input variables
+│   │   ├── outputs.tf                 # Output values
+│   │   ├── terraform.tf               # Provider configuration
+│   │   └── README.md                  # Module documentation
 │   │
 │   └── jenkins/
 │       └── ... (coming soon)
@@ -371,7 +379,11 @@ terraform-aws-infrastructure/
 │   │   └── ...
 │   │
 │   └── rds/
-│       └── ...
+│       ├── main.tf
+│       ├── variables.tf
+│       ├── outputs.tf
+│       ├── terraform.tfvars.example
+│       └── backend.tf.example
 │
 └── .gitignore                         # Git ignore rules
 ```
@@ -391,6 +403,7 @@ terraform-aws-infrastructure/
       "Action": [
         "eks:*",
         "ec2:*",
+        "rds:*",
         "iam:CreateRole",
         "iam:AttachRolePolicy",
         "iam:GetRole",
@@ -412,6 +425,7 @@ terraform-aws-infrastructure/
 Attach these AWS managed policies to your IAM user:
 - `AmazonEKSFullAccess`
 - `AmazonEC2FullAccess`
+- `AmazonRDSFullAccess`
 - `AWSKeyManagementServicePowerUser`
 - `CloudWatchFullAccess`
 - `AWSCloudFormationFullAccess`
@@ -441,7 +455,7 @@ All resources follow a consistent tagging strategy for cost allocation and manag
 | `ManagedBy` | Terraform | Infrastructure as Code tool | `Terraform` |
 | `Owner` | Team/Person | Responsible team/person | `platform-team` |
 | `CostCenter` | Cost center code | For billing allocation | `engineering` |
-| `CreatedDate` | YYYY-MM-DD | Creation date | `2026-06-18` |
+| `CreatedDate` | YYYY-MM-DD | Creation date | `2026-06-23` |
 
 ### Example Resource Tags
 
@@ -449,11 +463,11 @@ All resources follow a consistent tagging strategy for cost allocation and manag
 tags = {
   Environment = "production"
   Project     = "myapp"
-  Module      = "eks"
+  Module      = "rds"
   ManagedBy   = "Terraform"
   Owner       = "platform-team"
   CostCenter  = "engineering"
-  CreatedDate = "2026-06-18"
+  CreatedDate = "2026-06-23"
 }
 ```
 
@@ -488,7 +502,7 @@ tags = {
 | Component | Cost/Month |
 |-----------|-----------|
 | db.t3.small (2 instances) | ~$200.00 |
-| Storage (100GB) | ~$25.00 |
+| Storage (100GB gp3) | ~$25.00 |
 | Backup Storage | ~$10.00 |
 | Data Transfer | ~$5.00 |
 | **Total** | **~$240/month** |
@@ -513,6 +527,7 @@ Each branch contains:
 
 ### External Resources
 - [AWS EKS Documentation](https://docs.aws.amazon.com/eks/)
+- [AWS RDS Documentation](https://docs.aws.amazon.com/rds/)
 - [Terraform AWS Provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
 - [Kubernetes Documentation](https://kubernetes.io/docs/)
 - [AWS Best Practices](https://aws.amazon.com/architecture/well-architected/)
@@ -655,7 +670,7 @@ What actually happens
 ## Environment
 - Terraform: vX.X.X
 - AWS Region: us-east-1
-- Module: eks
+- Module: rds
 
 ## Additional Context
 Error logs, screenshots, etc.
@@ -667,7 +682,12 @@ Error logs, screenshots, etc.
 
 See [CHANGELOG.md](./CHANGELOG.md) for detailed version history.
 
-### Latest Release: v1.0.0
+### Latest Release: v1.1.0 (2026-06-23)
+- ✅ RDS module production-ready (MySQL & PostgreSQL)
+- ✅ Multi-AZ, read replicas, CloudWatch alarms
+- ✅ Complete examples and IMPLEMENTATION_GUIDE
+
+### v1.0.0 (2026-06-18)
 - ✅ EKS module production-ready
 - ✅ VPC module with multi-AZ support
 - ✅ Complete documentation and examples
@@ -716,6 +736,6 @@ This project is licensed under the **MIT License** - see [LICENSE](./LICENSE) fi
 
 ---
 
-**Last Updated**: 2026-06-18  
+**Last Updated**: 2026-06-23  
 **Terraform Version**: >= 1.0  
 **AWS Provider**: >= 5.0
