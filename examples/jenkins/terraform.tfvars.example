@@ -1,0 +1,11 @@
+aws_region          = "us-east-1"
+environment         = "dev"
+project             = "myapp"
+owner               = "platform-team"
+vpc_id              = "vpc-xxxxxxxxxx"
+subnet_id           = "subnet-xxxxxxxxxx"   # Use a private subnet
+instance_type       = "t3.large"
+volume_size         = 50
+key_name            = "my-keypair"           # Optional — remove for SSM-only access
+allowed_cidr_blocks = ["10.0.0.0/8"]
+eks_cluster_name    = "myapp-eks-cluster"    # Leave empty to skip kubectl config
