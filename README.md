@@ -1,156 +1,118 @@
-# 🏗 Terraform AWS VPC Module
+# 🗄️ RDS Implementation Guide
 
-A production-grade, reusable Terraform module for provisioning a complete AWS VPC infrastructure with multi-environment support.
-
-![Terraform](https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white)
-![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+Step-by-step guide for deploying the RDS module.
 
 ---
 
-## 📐 Architecture
+## Prerequisites
 
-```
-VPC (10.0.0.0/16)
-├── Public Subnets  (AZ-a, AZ-b, AZ-c)  → Internet Gateway
-│     └── NAT Gateway (with Elastic IP)
-├── Private Subnets (AZ-a, AZ-b, AZ-c)  → NAT Gateway
-└── Security Groups
-      ├── Bastion SG    (SSH from allowed CIDRs)
-      ├── ALB SG        (HTTP/HTTPS from internet)
-      ├── App SG        (traffic from ALB + SSH from Bastion)
-      └── RDS SG        (MySQL/PostgreSQL from App SG)
-```
+- Terraform >= 1.0 installed
+- AWS CLI configured (`aws sts get-caller-identity` works)
+- An existing VPC with at least 2 private subnets in different AZs
+  (deploy `feature/vpc` first if needed)
 
 ---
 
-## ✅ Features
-
-- ✔ Multi-AZ public and private subnets
-- ✔ Internet Gateway for public subnets
-- ✔ NAT Gateway per AZ (prod) or single NAT (dev/staging) for cost saving
-- ✔ Separate security groups for Bastion, ALB, App, and RDS
-- ✔ VPC Flow Logs to CloudWatch for observability
-- ✔ EKS-ready subnet tags (`kubernetes.io/role/elb`)
-- ✔ Full tagging strategy with `common_tags`
-- ✔ S3 remote state backend support (prod)
-- ✔ Multi-environment: dev / staging / prod
-
----
-
-## 📁 Folder Structure
-
-```
-terraform-aws-vpc/
-├── modules/
-│   └── vpc/
-│       ├── main.tf          # VPC, subnets, IGW, NAT, route tables, SGs, flow logs
-│       ├── variables.tf     # All input variables with descriptions & validation
-│       └── outputs.tf       # All output values
-├── environments/
-│   ├── dev/
-│   │   ├── main.tf          # Dev-specific config (single NAT, 2 AZs)
-│   │   ├── variables.tf
-│   │   └── outputs.tf
-│   ├── staging/
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
-│   └── prod/
-│       ├── main.tf          # Prod config (NAT per AZ, 3 AZs, S3 backend)
-│       ├── variables.tf
-│       └── outputs.tf
-├── .gitignore
-└── README.md
-```
-
----
-
-## 🚀 Usage
-
-### Deploy Dev Environment
+## Step 1 — Clone & Switch Branch
 
 ```bash
-cd environments/dev
-
-# Initialize Terraform
-terraform init
-
-# Preview changes
-terraform plan
-
-# Apply
-terraform apply
+git clone https://github.com/sujithp28/terraform-aws-infrastructure.git
+cd terraform-aws-infrastructure
+git checkout feature/rds
+cd examples/rds
 ```
 
-### Deploy Prod Environment
+---
+
+## Step 2 — Configure Variables
 
 ```bash
-cd environments/prod
+cp terraform.tfvars.example terraform.tfvars
+```
 
-# Update backend bucket name in main.tf first
-terraform init
+Edit `terraform.tfvars`. Minimum required values:
 
-terraform plan -out=tfplan
-terraform apply tfplan
+```hcl
+vpc_id             = "vpc-0123456789abcdef0"
+private_subnet_ids = ["subnet-aaa", "subnet-bbb"]
+db_name            = "appdb"
+master_username    = "admin"
+master_password    = "YourStrongPassword123!"
+```
+
+**Tip**: Pass the password via environment variable to avoid storing it in a file:
+
+```bash
+export TF_VAR_master_password="YourStrongPassword123!"
 ```
 
 ---
 
-## ⚙️ Module Inputs
+## Step 3 — (Optional) Configure Remote State
 
-| Variable | Description | Type | Default |
-|---|---|---|---|
-| `project` | Project name for resource naming | `string` | - |
-| `environment` | Environment (dev/staging/prod) | `string` | - |
-| `vpc_cidr` | VPC CIDR block | `string` | `10.0.0.0/16` |
-| `availability_zones` | List of AZs | `list(string)` | - |
-| `public_subnet_cidrs` | Public subnet CIDRs | `list(string)` | - |
-| `private_subnet_cidrs` | Private subnet CIDRs | `list(string)` | - |
-| `enable_nat_gateway` | Create NAT Gateways | `bool` | `true` |
-| `single_nat_gateway` | Use one NAT GW (cost saving) | `bool` | `false` |
-| `enable_flow_logs` | Enable VPC Flow Logs | `bool` | `true` |
-| `bastion_allowed_cidrs` | CIDRs allowed for SSH | `list(string)` | `["0.0.0.0/0"]` |
-| `common_tags` | Tags applied to all resources | `map(string)` | `{}` |
+```bash
+cp backend.tf.example backend.tf
+# Edit backend.tf with your S3 bucket and DynamoDB table
+```
 
 ---
 
-## 📤 Module Outputs
+## Step 4 — Deploy
 
-| Output | Description |
-|---|---|
-| `vpc_id` | VPC ID |
-| `vpc_cidr` | VPC CIDR block |
-| `public_subnet_ids` | List of public subnet IDs |
-| `private_subnet_ids` | List of private subnet IDs |
-| `nat_gateway_ids` | List of NAT Gateway IDs |
-| `bastion_sg_id` | Bastion Security Group ID |
-| `alb_sg_id` | ALB Security Group ID |
-| `app_sg_id` | App / EKS worker Security Group ID |
-| `rds_sg_id` | RDS Security Group ID |
+```bash
+terraform init
+terraform plan     # Review what will be created
+terraform apply    # Type 'yes' to confirm
+```
+
+Typical deploy time: **5–10 minutes** (15–20 min for Multi-AZ).
 
 ---
 
-## 🔐 Security Best Practices Applied
+## Step 5 — Verify
 
-- Private subnets have no direct internet access
-- RDS only accessible from App security group
-- Bastion SSH restricted to specified CIDRs
-- VPC Flow Logs enabled for audit trail
-- State file encrypted at rest (S3 backend with SSE)
-- DynamoDB state locking prevents concurrent applies
+```bash
+terraform output
 
----
-
-## 📋 Prerequisites
-
-- [Terraform](https://developer.hashicorp.com/terraform/install) >= 1.5.0
-- AWS CLI configured with appropriate IAM permissions
-- S3 bucket and DynamoDB table for remote state (prod only)
+# Connect to the DB
+DB_HOST=$(terraform output -raw db_address)
+mysql -h $DB_HOST -u admin -p appdb
+```
 
 ---
 
-## 👤 Author
+## Upgrading Dev → Prod
 
-**Sujith** — Senior DevOps Engineer  
-[![GitHub](https://img.shields.io/badge/GitHub-sujithp28-black?style=flat&logo=github)](https://github.com/sujithp28)
+1. Change `environment = "prod"` and increase `instance_class`
+2. Set `multi_az = true`, `deletion_protection = true`, `skip_final_snapshot = false`
+3. Run `terraform plan` — no data loss for these changes
+4. Run `terraform apply` — Multi-AZ conversion takes ~10 minutes
+
+---
+
+## Destroying
+
+```bash
+# 1. Disable deletion protection first (if enabled)
+terraform apply -var="deletion_protection=false"
+
+# 2. Destroy
+terraform destroy
+```
+
+---
+
+## Troubleshooting
+
+| Error | Fix |
+|-------|-----|
+| `InvalidSubnet` | Ensure subnets are in at least 2 different AZs |
+| `InvalidParameterValue: engine version` | Check available versions: `aws rds describe-db-engine-versions --engine mysql` |
+| `InsufficientDBInstanceCapacity` | Try a different AZ or instance type |
+| `KMSKeyNotAccessibleFault` | Verify KMS key policy allows RDS access |
+| Cannot connect after deploy | Check security group allows your app's SG or CIDR on the DB port |
+
+Enable Terraform debug logging for deeper issues:
+```bash
+TF_LOG=DEBUG terraform plan 2>&1 | tee plan.log
+```
