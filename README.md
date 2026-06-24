@@ -1,160 +1,22 @@
-# 🏗 Terraform AWS Infrastructure
+# ☸️ EKS Module
 
-> Production-grade, modular AWS infrastructure built with Terraform.  
-> Each module is maintained in its own branch and independently deployable.
+Production-grade Amazon EKS cluster with multi-AZ node groups, OIDC/IRSA, and managed add-ons.
 
-![Terraform](https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white)
-![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white)
-![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
-![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white)
+## Features
+- EKS cluster with private/public endpoint control
+- Three node group types: system, application, GPU (optional)
+- OIDC provider for IAM Roles for Service Accounts (IRSA)
+- Managed add-ons: VPC CNI, EBS CSI, EFS CSI, CoreDNS, kube-proxy
+- KMS encryption for secrets and EBS volumes
+- CloudWatch control plane logging
 
----
-
-## 📌 Branch Strategy
-
-Each infrastructure module lives in its own branch.  
-The `main` branch contains this overview only.
-
-| Branch | Module | Description | Status |
-|---|---|---|---|
-| [`https://github.com/sujithp28/terraform/tree/feature/terraform-vpc`](#) | 🌐 AWS VPC | VPC, Subnets, IGW, NAT, Security Groups | ✅ Ready |
-| [`feature/eks`](#) | ☸️ Amazon EKS | EKS Cluster, Node Groups, IAM Roles | 🚧 In Progress |
-| [`feature/jenkins-cicd`](#) | ⚙️ Jenkins CI/CD | Jenkins on EC2, Pipeline as Code | 🚧 In Progress |
-| [`feature/monitoring`](#) | 📊 Monitoring | Dynatrace + CloudWatch Dashboards & Alerts | 🔜 Planned |
-| [`feature/rds`](#) | 🗄 AWS RDS | RDS MySQL/PostgreSQL with Multi-AZ | 🔜 Planned |
-| [`feature/s3-iam`](#) | 🔐 S3 & IAM | S3 Buckets, IAM Roles, Policies | 🔜 Planned |
-
-> Replace `#` links above with actual branch URLs after pushing to GitHub.
-
----
-
-## 🏛 Overall Architecture
-
-```
-                          ┌─────────────────────────────────┐
-                          │         AWS Account              │
-                          │                                  │
-                          │   ┌──────────────────────────┐  │
-                          │   │         VPC               │  │
-                          │   │  ┌─────────┐ ┌─────────┐ │  │
-                          │   │  │ Public  │ │ Private │ │  │
-                          │   │  │ Subnets │ │ Subnets │ │  │
-                          │   │  └────┬────┘ └────┬────┘ │  │
-                          │   │       │            │      │  │
-                          │   │  ┌────▼────┐  ┌───▼───┐  │  │
-                          │   │  │   ALB   │  │  EKS  │  │  │
-                          │   │  └────┬────┘  └───┬───┘  │  │
-                          │   │       │            │      │  │
-                          │   │  ┌────▼────────────▼───┐  │  │
-                          │   │  │       Jenkins        │  │  │
-                          │   │  │    CI/CD Pipeline    │  │  │
-                          │   │  └─────────────────────┘  │  │
-                          │   └──────────────────────────┘  │
-                          └─────────────────────────────────┘
-```
-
----
-
-## 🌿 How to Use a Module
-
-Each branch is a standalone, deployable Terraform module.
-
+## Quick Start
 ```bash
-# 1. Clone the repo
-git clone https://github.com/sujithp28/terraform.git
-cd terraform-aws-infrastructure
-
-# 2. Switch to the module branch you want
-git checkout feature/vpc
-
-# 3. Go to the environment you want to deploy
-cd environments/dev        # or staging / prod
-
-# 4. Initialize and deploy
-terraform init
-terraform plan
-terraform apply
+cd examples/eks
+cp terraform.tfvars.example terraform.tfvars
+vim terraform.tfvars
+terraform init && terraform plan && terraform apply
+aws eks update-kubeconfig --name <cluster-name> --region us-east-1
 ```
 
----
-
-## 📁 Standard Module Structure
-
-Every branch follows this consistent structure:
-
-```
-├── modules/
-│   └── <module-name>/
-│       ├── main.tf          # Core resources
-│       ├── variables.tf     # Input variables with validation
-│       └── outputs.tf       # Output values
-├── environments/
-│   ├── dev/
-│   │   ├── main.tf          # Dev-specific config
-│   │   ├── variables.tf
-│   │   └── outputs.tf
-│   ├── staging/
-│   └── prod/
-├── .gitignore
-└── README.md                # Module-specific documentation
-```
-
----
-
-## ⚙️ Prerequisites
-
-- [Terraform](https://developer.hashicorp.com/terraform/install) >= 1.5.0
-- [AWS CLI](https://aws.amazon.com/cli/) configured with IAM credentials
-- [kubectl](https://kubernetes.io/docs/tasks/tools/) (for EKS branch)
-- [Helm](https://helm.sh/docs/intro/install/) (for EKS branch)
-
----
-
-## 🔐 AWS IAM Permissions Required
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ec2:*",
-        "eks:*",
-        "iam:*",
-        "s3:*",
-        "rds:*",
-        "elasticloadbalancing:*",
-        "cloudwatch:*",
-        "logs:*",
-        "autoscaling:*"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-```
-
-> ⚠️ For production, scope down permissions to specific resources.
-
----
-
-## 🏷 Tagging Strategy
-
-All resources follow a consistent tagging strategy:
-
-| Tag | Value | Description |
-|---|---|---|
-| `Project` | `myapp` | Project name |
-| `Environment` | `dev / staging / prod` | Deployment environment |
-| `ManagedBy` | `Terraform` | IaC tool |
-| `Owner` | `DevOps` | Responsible team |
-
----
-
-## 👤 Author
-
-**Sujith** — Senior DevOps Engineer
-
-[![GitHub](https://img.shields.io/badge/GitHub-sujithp28-black?style=flat&logo=github)](https://github.com/sujithp28)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat&logo=linkedin)](https://linkedin.com/in/YOUR_LINKEDIN)
+See `IMPLEMENTATION_GUIDE.md` for full details.
