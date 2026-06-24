@@ -1,8 +1,8 @@
 # 🏗️ Terraform AWS Infrastructure
 
 > **Production-grade, modular AWS infrastructure built with Terraform.**
-> Each module lives in its own branch and is independently deployable.
-> Complete with documentation, examples, security hardening, and best practices.
+> Each module lives in its own feature branch and is independently deployable.
+> Every branch ships with full Terraform code, examples, security hardening, and an implementation guide.
 
 <div align="center">
 
@@ -11,7 +11,7 @@
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
 ![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
-![Last Updated](https://img.shields.io/badge/Last%20Updated-June%202026-blue?style=for-the-badge)
+![Modules](https://img.shields.io/badge/Modules-6%20Complete-brightgreen?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge)
 
 </div>
@@ -36,372 +36,323 @@
 - [Troubleshooting](#-troubleshooting)
 - [Roadmap](#-roadmap)
 - [Contributing](#-contributing)
-- [Documentation](#-documentation)
-- [Support](#-support)
 - [Author](#-author)
 
 ---
 
 ## 🚀 Quick Start
 
-Get started with any module in under 5 minutes:
+Get up and running with any module in under 5 minutes:
 
 ```bash
 # 1. Clone the repository
 git clone https://github.com/sujithp28/terraform-aws-infrastructure.git
 cd terraform-aws-infrastructure
 
-# 2. Switch to your desired module branch
+# 2. Switch to the module branch you need
+git checkout feature/vpc          # VPC + networking (start here)
 git checkout feature/eks          # Amazon EKS cluster
-git checkout feature/vpc          # VPC + networking
-git checkout feature/rds          # RDS database
+git checkout feature/rds          # RDS MySQL / PostgreSQL
+git checkout feature/jenkins-cicd # Jenkins CI/CD on EC2
+git checkout feature/monitoring   # CloudWatch dashboards & alarms
+git checkout feature/s3-iam       # S3 buckets & IAM roles
 
-# 3. Navigate to the examples directory
-cd examples/eks                   # (or vpc, rds, etc.)
-
-# 4. Configure your variables
+# 3. Configure variables
 cp terraform.tfvars.example terraform.tfvars
-vim terraform.tfvars              # Fill in your values
+vim terraform.tfvars
 
-# 5. Deploy
-terraform init
-terraform plan
-terraform apply
+# 4. Deploy
+terraform init && terraform plan && terraform apply
 
-# 6. View outputs
+# 5. View outputs
 terraform output
 ```
 
-For detailed instructions, see `IMPLEMENTATION_GUIDE.md` in each branch.
+> 📖 Each branch contains a detailed `IMPLEMENTATION_GUIDE.md` — read it before deploying.
 
 ---
 
 ## 📋 Project Overview
 
-This repository contains **production-ready Terraform modules** for AWS infrastructure. Each module is:
+This repository provides **six production-ready Terraform modules** covering the full AWS infrastructure stack for a modern cloud-native application.
 
-| Property | Description |
-|----------|-------------|
-| ✅ **Modular** | Independently deployable; no tight coupling between modules |
-| ✅ **Documented** | Comprehensive guides, inline comments, and examples |
-| ✅ **Secure** | IAM least privilege, KMS encryption, private endpoints |
-| ✅ **Scalable** | Multi-AZ, auto-scaling, and multi-environment support |
-| ✅ **Observable** | CloudWatch logging, dashboards, and metric alarms |
-| ✅ **Compliant** | Tagging strategy, audit logs, and backup policies |
+| Property | Detail |
+|----------|--------|
+| ✅ **Modular** | Each module is independently deployable — no tight coupling |
+| ✅ **Documented** | Every branch has `IMPLEMENTATION_GUIDE.md`, inline comments, and examples |
+| ✅ **Secure** | KMS encryption, private subnets, IAM least privilege, IMDSv2 |
+| ✅ **Scalable** | Multi-AZ, auto-scaling, multi-environment tfvars |
+| ✅ **Observable** | CloudWatch logs, dashboards, and metric alarms built in |
+| ✅ **Compliant** | Consistent tagging, audit logs, backup policies, HTTPS-only |
 
 ---
 
 ## 🌿 Branch Strategy
 
-Each infrastructure component lives in its own branch. The `master` branch holds this overview only.
+The `master` branch holds this overview. Every module lives in its own `feature/` branch.
 
-### Module Branches
+### Active Module Branches
 
-| Branch | Module | Description | Status | Link |
-|--------|--------|-------------|--------|------|
-| `feature/vpc` | 🌐 AWS VPC | VPC, Subnets, IGW, NAT Gateway, Security Groups, Route Tables | ✅ Ready | [View Branch](https://github.com/sujithp28/terraform-aws-infrastructure/tree/feature/vpc) |
-| `feature/eks` | ☸️ Amazon EKS | EKS Cluster, Node Groups, OIDC/IRSA, Managed Add-ons | ✅ Ready | [View Branch](https://github.com/sujithp28/terraform-aws-infrastructure/tree/feature/eks) |
-| `feature/rds` | 🗄️ AWS RDS | RDS MySQL/PostgreSQL, Multi-AZ, Read Replicas, CloudWatch Alarms | ✅ Ready | [View Branch](https://github.com/sujithp28/terraform-aws-infrastructure/tree/feature/rds) |
-| `feature/jenkins-cicd` | ⚙️ Jenkins CI/CD | Jenkins on EC2, Pipeline as Code, Docker Integration, EKS Deploy | 🚧 In Progress | [View Branch](https://github.com/sujithp28/terraform-aws-infrastructure/tree/feature/jenkins-cicd) |
-| `feature/monitoring` | 📊 Monitoring | Dynatrace + CloudWatch, Dashboards, Metric Alarms | 🔜 Planned | Coming Soon |
-| `feature/s3-iam` | 🔐 S3 & IAM | S3 Buckets, IAM Roles, Policies, Versioning, Replication | 🔜 Planned | Coming Soon |
+| Branch | Module | Key Resources | Status | Link |
+|--------|--------|---------------|--------|------|
+| `feature/vpc` | 🌐 AWS VPC | VPC, Subnets (Multi-AZ), IGW, NAT Gateway, Flow Logs | ✅ **Complete** | [View →](https://github.com/sujithp28/terraform-aws-infrastructure/tree/feature/vpc) |
+| `feature/eks` | ☸️ Amazon EKS | EKS Cluster, Node Groups, OIDC/IRSA, Managed Add-ons | ✅ **Complete** | [View →](https://github.com/sujithp28/terraform-aws-infrastructure/tree/feature/eks) |
+| `feature/rds` | 🗄️ AWS RDS | MySQL 8.0 / PostgreSQL 15, Multi-AZ, Read Replicas, Alarms | ✅ **Complete** | [View →](https://github.com/sujithp28/terraform-aws-infrastructure/tree/feature/rds) |
+| `feature/jenkins-cicd` | ⚙️ Jenkins CI/CD | Jenkins EC2, Docker, kubectl, ECR Push, EKS Deploy Pipeline | ✅ **Complete** | [View →](https://github.com/sujithp28/terraform-aws-infrastructure/tree/feature/jenkins-cicd) |
+| `feature/monitoring` | 📊 Monitoring | CloudWatch Alarms, SNS Alerts, Dashboard, Log Groups | ✅ **Complete** | [View →](https://github.com/sujithp28/terraform-aws-infrastructure/tree/feature/monitoring) |
+| `feature/s3-iam` | 🔐 S3 & IAM | S3 Encrypted Bucket, Versioning, Replication, IAM Roles | ✅ **Complete** | [View →](https://github.com/sujithp28/terraform-aws-infrastructure/tree/feature/s3-iam) |
+
+### Master Branch Files
+
+| File | Purpose |
+|------|---------|
+| `README.md` | This overview (you are here) |
+| `CHANGELOG.md` | Full version history |
+| `CONTRIBUTING.md` | Contribution guidelines |
+| `LICENSE` | MIT License |
+| `.gitignore` | Ignores state, secrets, editor files |
 
 ---
 
 ## 📊 Project Status
 
-### Overall Progress: **65% Complete**
+### Overall Progress: **100% Complete** 🎉
 
-| Component | Status | Version | Last Updated |
-|-----------|--------|---------|--------------|
-| VPC Module | ✅ Ready | v1.0.0 | 2026-06-18 |
-| EKS Module | ✅ Ready | v1.0.0 | 2026-06-18 |
-| RDS Module | ✅ Ready | v1.1.0 | 2026-06-23 |
-| Jenkins Module | 🚧 In Progress | v0.5.0 | 2026-06-10 |
-| Monitoring | 🔜 Planned | - | - |
-| S3 & IAM | 🔜 Planned | - | - |
+| Module | Status | Version | Branch | Last Updated |
+|--------|--------|---------|--------|--------------|
+| VPC | ✅ Complete | v1.0.0 | `feature/vpc` | 2026-06-24 |
+| EKS | ✅ Complete | v1.0.0 | `feature/eks` | 2026-06-24 |
+| RDS | ✅ Complete | v1.1.0 | `feature/rds` | 2026-06-24 |
+| Jenkins CI/CD | ✅ Complete | v1.0.0 | `feature/jenkins-cicd` | 2026-06-24 |
+| Monitoring | ✅ Complete | v1.0.0 | `feature/monitoring` | 2026-06-24 |
+| S3 & IAM | ✅ Complete | v1.0.0 | `feature/s3-iam` | 2026-06-24 |
 
-### Recent Updates
+### Changelog Summary
 
-| Date | Change |
-|------|--------|
-| 2026-06-24 | 📄 Master README overhaul — improved structure, security, troubleshooting & roadmap |
-| 2026-06-23 | ✅ RDS module production-ready (MySQL & PostgreSQL, Multi-AZ, read replicas, CloudWatch alarms) |
-| 2026-06-23 | ✅ RDS `IMPLEMENTATION_GUIDE.md` and complete examples added |
-| 2026-06-18 | ✅ Production-grade EKS module with comprehensive documentation |
-| 2026-06-18 | ✅ EKS add-ons: VPC CNI, EBS CSI, EFS CSI, CoreDNS |
-| 2026-06-17 | ✅ Initial VPC module with multi-AZ support |
+| Date | Version | Change |
+|------|---------|--------|
+| 2026-06-24 | v1.3.0 | ✅ All 6 modules complete — Jenkins, Monitoring, S3 & IAM pushed |
+| 2026-06-24 | v1.2.0 | 📄 Master README overhaul, `.gitignore`, `CONTRIBUTING.md`, `CHANGELOG.md` |
+| 2026-06-23 | v1.1.0 | ✅ RDS module — MySQL & PostgreSQL, Multi-AZ, alarms, examples |
+| 2026-06-18 | v1.0.0 | ✅ VPC + EKS modules — OIDC/IRSA, managed add-ons, security hardening |
 
 ---
 
 ## 🏛️ Overall Architecture
 
 ```
-┌──────────────────────────────────────────────────────────────────────┐
-│                          AWS Account                                 │
-├──────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  ┌───────────────────────────────────────────────────────────────┐   │
-│  │                      VPC (10.0.0.0/16)                        │   │
-│  │                                                               │   │
-│  │  ┌──────────────────────────┐   ┌─────────────────────────┐  │   │
-│  │  │     Public Subnets       │   │    Private Subnets       │  │   │
-│  │  │  (us-east-1a, 1b, 1c)   │   │  (us-east-1a, 1b, 1c)  │  │   │
-│  │  │                          │   │                          │  │   │
-│  │  │  ┌────────────────────┐  │   │  ┌──────────────────┐   │  │   │
-│  │  │  │   ALB / NLB        │  │   │  │   EKS Cluster    │   │  │   │
-│  │  │  │   (Ingress)        │  │   │  │  - System Nodes  │   │  │   │
-│  │  │  └────────┬───────────┘  │   │  │  - App Nodes     │   │  │   │
-│  │  │           │               │   │  │  - GPU Nodes*    │   │  │   │
-│  │  │  ┌────────▼───────────┐  │   │  └────────┬─────────┘   │  │   │
-│  │  │  │   NAT Gateway      │  │   │           │               │  │   │
-│  │  │  │   (IGW Route)      │  │   │  ┌────────▼───────────┐  │  │   │
-│  │  │  └────────────────────┘  │   │  │   Jenkins CI/CD    │  │  │   │
-│  │  │                          │   │  │   (Pipeline Host)  │  │  │   │
-│  │  │  ┌────────────────────┐  │   │  └────────────────────┘  │  │   │
-│  │  │  │  Internet Gateway  │  │   │                          │  │   │
-│  │  │  │  (0.0.0.0/0)       │  │   │  ┌──────────────────┐   │  │   │
-│  │  │  └────────────────────┘  │   │  │  RDS (Multi-AZ)  │   │  │   │
-│  │  └──────────────────────────┘   │  │ Primary: 1a      │   │  │   │
-│  │                                  │  │ Standby: 1b      │   │  │   │
-│  │                                  │  └──────────────────┘   │  │   │
-│  │                                  └─────────────────────────┘  │   │
-│  └───────────────────────────────────────────────────────────────┘   │
-│                                                                      │
-│  ┌───────────────────────────────────────────────────────────────┐   │
-│  │               Monitoring & Observability                      │   │
-│  │  • CloudWatch Logs  (EKS, RDS, Jenkins, Application)         │   │
-│  │  • CloudWatch Dashboards & Metric Alarms                     │   │
-│  │  • AWS X-Ray (Optional tracing)                              │   │
-│  │  • Dynatrace Integration (Optional APM)                      │   │
-│  └───────────────────────────────────────────────────────────────┘   │
-│                                                                      │
-└──────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                           AWS Account                               │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │                    VPC  (10.0.0.0/16)                        │  │
+│  │                                                              │  │
+│  │  ┌─────────────────────────┐  ┌──────────────────────────┐  │  │
+│  │  │     Public Subnets      │  │     Private Subnets       │  │  │
+│  │  │  (1a · 1b · 1c)        │  │  (1a · 1b · 1c)          │  │  │
+│  │  │                         │  │                            │  │  │
+│  │  │  ┌─────────────────┐   │  │  ┌────────────────────┐   │  │  │
+│  │  │  │  ALB / NLB      │   │  │  │   EKS Cluster      │   │  │  │
+│  │  │  │  (Ingress)      │   │  │  │  ├─ System Nodes   │   │  │  │
+│  │  │  └────────┬────────┘   │  │  │  ├─ App Nodes      │   │  │  │
+│  │  │           │             │  │  │  └─ GPU Nodes*     │   │  │  │
+│  │  │  ┌────────▼────────┐   │  │  └────────┬───────────┘   │  │  │
+│  │  │  │  NAT Gateway    │   │  │           │                 │  │  │
+│  │  │  │  (per AZ)       │   │  │  ┌────────▼───────────┐   │  │  │
+│  │  │  └─────────────────┘   │  │  │  Jenkins CI/CD      │   │  │  │
+│  │  │                         │  │  │  (EC2 + Docker)     │   │  │  │
+│  │  │  ┌─────────────────┐   │  │  └────────────────────┘   │  │  │
+│  │  │  │ Internet Gateway│   │  │                             │  │  │
+│  │  │  └─────────────────┘   │  │  ┌────────────────────┐   │  │  │
+│  │  └─────────────────────────┘  │  │  RDS  (Multi-AZ)   │   │  │  │
+│  │                                │  │  Primary · Standby  │   │  │  │
+│  │                                │  │  + Read Replica     │   │  │  │
+│  │                                │  └────────────────────┘   │  │  │
+│  │                                └──────────────────────────┘  │  │
+│  └──────────────────────────────────────────────────────────────┘  │
+│                                                                     │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │              S3 & IAM                                        │  │
+│  │  • S3 (encrypted, versioned, lifecycle, HTTPS-only)         │  │
+│  │  • IAM Roles (app, CI/CD, replication)                      │  │
+│  └──────────────────────────────────────────────────────────────┘  │
+│                                                                     │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │              Monitoring & Observability                       │  │
+│  │  • CloudWatch Logs  — EKS, RDS, Jenkins, App                │  │
+│  │  • CloudWatch Alarms — CPU, storage, memory, connections     │  │
+│  │  • CloudWatch Dashboards — unified infra view               │  │
+│  │  • SNS Email Alerts — immediate on-call notification        │  │
+│  └──────────────────────────────────────────────────────────────┘  │
+│                                                                     │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
 ## 📦 Module Features
 
-### 🌐 VPC Module
-- Multi-AZ VPC with public and private subnets (3 AZs)
-- NAT Gateway for private subnet outbound access
-- Internet Gateway for public internet access
-- Network ACLs and Security Groups (least privilege)
-- VPC Flow Logs for network visibility
-- DNS support, DNS hostnames enabled
-- Configurable CIDR blocks per environment
+### 🌐 VPC (`feature/vpc`)
+- Multi-AZ VPC — 3 public + 3 private subnets across 3 AZs
+- Internet Gateway + NAT Gateway (per-AZ or single for cost saving)
+- VPC Flow Logs → CloudWatch with configurable retention
+- Route tables with correct public/private associations
+- Kubernetes ELB subnet tags for ALB Ingress Controller
 
-### ☸️ EKS Module
-- **Production-grade EKS cluster** with Kubernetes best practices
-- **Multi-AZ node groups** for high availability
-- **Three node group types**:
-  - System nodes (3 × `t3.medium`, dedicated system workloads)
-  - Application nodes (auto-scaling, `t3.large`)
-  - GPU nodes (optional, for ML/AI workloads)
-- **Security hardening**:
-  - KMS encryption for EBS volumes and secrets
-  - Private API endpoint (public endpoint optional)
-  - Security groups with least-privilege ingress/egress
-  - IRSA (IAM Roles for Service Accounts) via OIDC
-- **Managed add-ons**:
-  - VPC CNI — pod networking
-  - CoreDNS — service discovery
-  - kube-proxy — network routing
-  - EBS CSI Driver — persistent volumes
-  - EFS CSI Driver (optional) — shared file storage
-- **Comprehensive logging** to CloudWatch (API, audit, scheduler, controller)
-- **OIDC provider** for fine-grained IAM-to-pod role binding
+### ☸️ EKS (`feature/eks`)
+- Production EKS cluster with private/public API endpoint control
+- Three node group types: **system** (`t3.medium`), **app** (`t3.large`), **GPU** (optional)
+- OIDC provider + IRSA — no static credentials in pods
+- Managed add-ons: VPC CNI, CoreDNS, kube-proxy, EBS CSI, EFS CSI
+- KMS encryption for secrets and EBS volumes
+- Control plane logging: API, audit, scheduler, controller → CloudWatch
 
-### 🗄️ RDS Module
-- **Multi-engine support**: MySQL 8.0 and PostgreSQL 15
-- **Multi-AZ deployment** — automatic failover, zero RPO design
-- **Read replicas** — horizontal read scaling
-- **Storage autoscaling** with configurable max threshold
-- **KMS encryption** at rest (AWS-managed or customer-managed key)
-- **Enhanced Monitoring** — per-process metrics at 1–60s granularity
-- **Performance Insights** — query-level analysis and wait event breakdown
-- **CloudWatch Alarms**: CPU utilisation, free storage, free memory, connections
-- **Custom parameter groups** (MySQL & PostgreSQL engine-specific tuning)
-- **Option groups** for MySQL advanced features (audit plugin, etc.)
-- **Security groups** — CIDR and SG-based ingress with description tags
+### 🗄️ RDS (`feature/rds`)
+- MySQL 8.0 and PostgreSQL 15 — switch via single variable
+- Multi-AZ with automatic failover + optional read replica
+- Storage autoscaling (gp3, configurable max)
+- KMS at-rest encryption (AWS-managed or customer CMK)
+- Enhanced Monitoring (per-process, 1–60s) + Performance Insights
+- CloudWatch Alarms: CPU, free storage, free memory, connections
+- Custom parameter groups + MySQL option groups
 
-### ⚙️ Jenkins CI/CD Module *(In Progress)*
-- Jenkins EC2 instance with automated provisioning
-- Pipeline as Code (Jenkinsfile) support
-- Docker daemon integration
-- Blue/Green deployment pattern
-- EKS `kubectl` integration for K8s deployments
-- Secrets management via AWS Secrets Manager
-- Webhook support for GitHub/GitLab events
-- Parameterised pipelines for multi-environment deploys
+### ⚙️ Jenkins CI/CD (`feature/jenkins-cicd`)
+- Jenkins LTS on Amazon Linux 2023 EC2 (private subnet)
+- Java 17 + Docker + AWS CLI v2 + kubectl + Helm — auto-installed via userdata
+- IAM role: ECR push, EKS describe, S3 read/write, Secrets Manager
+- IMDSv2 enforced — no legacy metadata access
+- **Jenkinsfile** included: checkout → lint → Docker build → Trivy scan → ECR push → EKS rolling deploy
+
+### 📊 Monitoring (`feature/monitoring`)
+- SNS topic + email subscription — confirm once, get all alerts
+- CloudWatch Alarms: RDS CPU, free storage, connection count
+- CloudWatch Dashboard — all key metrics in a single view
+- Application CloudWatch Log Group — centralised app logging
+
+### 🔐 S3 & IAM (`feature/s3-iam`)
+- S3 bucket: AES-256 encryption, public access block, HTTPS-only policy
+- Versioning + noncurrent version expiry (30 days)
+- Lifecycle: Glacier transition after 90 days, object expiry after 365 days
+- Optional cross-region replication with dedicated IAM role
+- Dynamic IAM roles — configure any number via a single `iam_roles` variable
 
 ---
 
 ## ⚙️ Prerequisites
 
-### Required Software
+### Required Tools
 
-| Tool | Minimum Version | Install Link |
-|------|----------------|--------------|
-| Terraform | >= 1.0 | [hashicorp.com](https://developer.hashicorp.com/terraform/install) |
-| AWS CLI | >= 2.0 | [aws.amazon.com](https://aws.amazon.com/cli/) |
+| Tool | Min Version | Install |
+|------|------------|---------|
+| Terraform | >= 1.0 | [developer.hashicorp.com](https://developer.hashicorp.com/terraform/install) |
+| AWS CLI | >= 2.0 | [aws.amazon.com/cli](https://aws.amazon.com/cli/) |
 | kubectl | >= 1.20 | [kubernetes.io](https://kubernetes.io/docs/tasks/tools/) |
 | Helm | >= 3.0 | [helm.sh](https://helm.sh/docs/intro/install/) |
-| jq | Any | `brew install jq` / `apt install jq` |
+| jq | any | `brew install jq` / `apt install jq` |
 
-### AWS Account Requirements
-
+### AWS Requirements
 - ✅ Active AWS account with billing enabled
-- ✅ IAM user/role with appropriate permissions (see [IAM Permissions](#-iam-permissions-required))
-- ✅ VPC with 2–3 private subnets (for EKS/RDS deployments)
-- ✅ NAT Gateway configured for private subnet egress
-- ✅ Internet Gateway attached for public subnets
+- ✅ IAM user or role with appropriate permissions
+- ✅ AWS CLI configured (`aws configure` or environment variables)
 
-### System Requirements
+### Recommended Deployment Order
+Deploy modules in this order to satisfy dependencies:
 
-| Platform | Minimum Version |
-|----------|----------------|
-| macOS | 10.14+ |
-| Linux | Ubuntu 20.04 LTS |
-| Windows | WSL2 with Ubuntu 20.04 |
-| Memory | 4 GB (local testing) |
-| Disk Space | 10 GB |
+```
+1. feature/vpc          ← all other modules depend on VPC outputs
+2. feature/rds          ← needs vpc_id + private subnet IDs
+3. feature/eks          ← needs vpc_id + private subnet IDs
+4. feature/jenkins-cicd ← needs vpc_id + subnet_id + (optional) eks_cluster_name
+5. feature/monitoring   ← needs rds_instance_id + (optional) eks_cluster_name
+6. feature/s3-iam       ← standalone, but best deployed after core infra
+```
 
 ---
 
 ## 🚀 Getting Started
 
-### Step 1: Clone the Repository
+### Step 1 — Clone & Configure AWS
 
 ```bash
 git clone https://github.com/sujithp28/terraform-aws-infrastructure.git
 cd terraform-aws-infrastructure
 
-# Confirm you're on master
-git branch
-```
-
-### Step 2: Configure AWS Credentials
-
-```bash
-# Option A: AWS CLI interactive setup
+# Configure AWS credentials
 aws configure
-
-# Option B: Environment variables
-export AWS_ACCESS_KEY_ID="your-access-key"
-export AWS_SECRET_ACCESS_KEY="your-secret-key"
-export AWS_DEFAULT_REGION="us-east-1"
-
-# Verify
-aws sts get-caller-identity
+aws sts get-caller-identity   # Verify
 ```
 
-### Step 3: Choose a Module
+### Step 2 — Start with VPC
 
 ```bash
-# View all available branches
-git branch -r
+git checkout feature/vpc
+cat IMPLEMENTATION_GUIDE.md         # Read before deploying
 
-# Checkout the module you need
-git checkout feature/eks     # Amazon EKS
-git checkout feature/vpc     # AWS VPC
-git checkout feature/rds     # AWS RDS
-```
-
-### Step 4: Read the Module Guide
-
-Each module branch includes:
-
-| File/Directory | Purpose |
-|----------------|---------|
-| `IMPLEMENTATION_GUIDE.md` | Step-by-step deployment instructions |
-| `examples/` | Ready-to-use configurations per environment |
-| `modules/` | Reusable Terraform module source |
-| `README.md` | Module-specific reference documentation |
-
-```bash
-# Read the guide before deploying
-cat IMPLEMENTATION_GUIDE.md
-ls -la examples/
-```
-
-### Step 5: Deploy
-
-```bash
-cd examples/eks                      # Navigate to your module's examples
-
+cd examples/vpc
 cp terraform.tfvars.example terraform.tfvars
-vim terraform.tfvars                 # Set your values
+vim terraform.tfvars                # Set environment, project, CIDRs
 
-terraform init                       # Download providers & modules
-terraform validate                   # Validate configuration syntax
-terraform fmt -recursive .           # Auto-format code
-terraform plan                       # Preview changes
-terraform apply                      # Deploy
+terraform init
+terraform validate
+terraform plan
+terraform apply
 
-terraform output                     # View outputs after deploy
+terraform output                    # Save vpc_id and subnet_ids for next steps
+```
+
+### Step 3 — Deploy Remaining Modules
+
+Each module follows the same pattern:
+
+```bash
+git checkout feature/<module-name>
+cat IMPLEMENTATION_GUIDE.md
+cd examples/<module-name>
+cp terraform.tfvars.example terraform.tfvars
+vim terraform.tfvars        # Paste vpc_id / subnet_ids from previous step
+terraform init && terraform plan && terraform apply
+```
+
+### Step 4 — Verify
+
+```bash
+# EKS — configure kubectl
+aws eks update-kubeconfig --name <cluster-name> --region us-east-1
+kubectl get nodes
+
+# RDS — check instance
+aws rds describe-db-instances --db-instance-identifier <identifier>
+
+# Jenkins — get initial password
+aws ssm start-session --target <instance-id>
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
 
 ---
 
 ## 📁 Directory Structure
 
+Each feature branch follows this layout:
+
 ```
-terraform-aws-infrastructure/
-├── README.md                          # This file (master overview)
-├── CONTRIBUTING.md                    # Contribution guidelines
-├── CHANGELOG.md                       # Version history
-├── LICENSE                            # MIT License
+feature/<module>/
+├── README.md                    # Module overview
+├── IMPLEMENTATION_GUIDE.md      # Step-by-step deploy instructions
+├── .gitignore
 │
-├── modules/
-│   ├── vpc/
-│   │   ├── main.tf                    # VPC, subnets, IGW, NAT, NACLs
-│   │   ├── variables.tf               # Input variables
-│   │   ├── outputs.tf                 # Output values
-│   │   └── README.md
-│   │
-│   ├── eks/
-│   │   ├── main.tf                    # EKS cluster
-│   │   ├── node_groups.tf             # System, app, GPU node groups
-│   │   ├── addons.tf                  # VPC CNI, EBS CSI, CoreDNS, etc.
-│   │   ├── oidc.tf                    # OIDC provider for IRSA
-│   │   ├── variables.tf
-│   │   ├── outputs.tf
-│   │   ├── terraform.tf               # Provider + version constraints
-│   │   └── README.md
-│   │
-│   ├── rds/
-│   │   ├── main.tf                    # RDS instance, SG, param groups, alarms
-│   │   ├── variables.tf
-│   │   ├── outputs.tf
-│   │   ├── terraform.tf
-│   │   └── README.md
-│   │
-│   └── jenkins/
-│       └── ...                        # Coming soon
+├── modules/<module>/
+│   ├── main.tf                  # Core resources
+│   ├── variables.tf             # Input variables (all with descriptions)
+│   ├── outputs.tf               # Output values
+│   └── terraform.tf             # Provider + version constraints
 │
-├── examples/
-│   ├── vpc/
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   ├── terraform.tfvars.example
-│   │   └── backend.tf.example
-│   │
-│   ├── eks/
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   ├── terraform.tfvars.example
-│   │   └── backend.tf.example
-│   │
-│   └── rds/
-│       ├── main.tf
-│       ├── variables.tf
-│       ├── outputs.tf
-│       ├── terraform.tfvars.example
-│       └── backend.tf.example
-│
-└── .gitignore
+└── examples/<module>/
+    ├── main.tf                  # Calls the module
+    ├── variables.tf
+    ├── outputs.tf
+    ├── terraform.tfvars.example # Fill in and rename to terraform.tfvars
+    └── backend.tf.example       # S3 remote state template
 ```
 
 ---
@@ -413,87 +364,64 @@ terraform-aws-infrastructure/
 ```json
 {
   "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "TerraformCoreAccess",
-      "Effect": "Allow",
-      "Action": [
-        "eks:*",
-        "ec2:*",
-        "rds:*",
-        "iam:CreateRole",
-        "iam:AttachRolePolicy",
-        "iam:DetachRolePolicy",
-        "iam:DeleteRole",
-        "iam:GetRole",
-        "iam:PassRole",
-        "iam:PutRolePolicy",
-        "iam:ListRolePolicies",
-        "iam:ListAttachedRolePolicies",
-        "cloudwatch:*",
-        "logs:*",
-        "kms:*",
-        "autoscaling:*",
-        "elasticloadbalancing:*",
-        "s3:GetObject",
-        "s3:PutObject",
-        "s3:ListBucket",
-        "dynamodb:GetItem",
-        "dynamodb:PutItem",
-        "dynamodb:DeleteItem"
-      ],
-      "Resource": "*"
-    }
-  ]
+  "Statement": [{
+    "Sid": "TerraformCoreAccess",
+    "Effect": "Allow",
+    "Action": [
+      "eks:*", "ec2:*", "rds:*",
+      "iam:CreateRole", "iam:AttachRolePolicy", "iam:DetachRolePolicy",
+      "iam:DeleteRole", "iam:GetRole", "iam:PassRole",
+      "iam:PutRolePolicy", "iam:ListRolePolicies", "iam:ListAttachedRolePolicies",
+      "cloudwatch:*", "logs:*", "kms:*",
+      "autoscaling:*", "elasticloadbalancing:*",
+      "s3:GetObject", "s3:PutObject", "s3:ListBucket",
+      "dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:DeleteItem"
+    ],
+    "Resource": "*"
+  }]
 }
 ```
 
-> **Note**: The `s3` and `dynamodb` permissions are required for Terraform remote state (S3 backend + DynamoDB lock table).
-
 ### Recommended AWS Managed Policies
 
-| Policy | Purpose |
+| Policy | Used By |
 |--------|---------|
-| `AmazonEKSFullAccess` | EKS cluster management |
-| `AmazonEC2FullAccess` | VPC, EC2, security groups |
-| `AmazonRDSFullAccess` | RDS instances and parameter groups |
-| `AWSKeyManagementServicePowerUser` | KMS key management |
-| `CloudWatchFullAccess` | Logs, dashboards, alarms |
-| `AWSCloudFormationFullAccess` | CloudFormation (used by EKS) |
+| `AmazonEKSFullAccess` | EKS module |
+| `AmazonEC2FullAccess` | VPC, Jenkins modules |
+| `AmazonRDSFullAccess` | RDS module |
+| `AWSKeyManagementServicePowerUser` | All encrypted resources |
+| `CloudWatchFullAccess` | Monitoring module |
+| `AmazonS3FullAccess` | S3 & IAM module |
 
-### ⚠️ Production Recommendations
-
-1. Use **IAM roles** instead of long-lived access keys
-2. **Scope resource ARNs** — avoid `"Resource": "*"` in production
-3. Enable **MFA** for all console and CLI access
-4. Rotate credentials regularly; use **AWS Secrets Manager**
-5. Enable **CloudTrail** for full API audit logging
-6. Use **VPC endpoints** for S3, DynamoDB, and ECR (no public internet)
-7. Apply **permission boundaries** to restrict privilege escalation
+### Production Security Rules
+1. Use **IAM roles** — never long-lived access keys
+2. **Scope ARNs** to specific resources in production
+3. Enable **MFA** on all human IAM users
+4. Use **AWS Secrets Manager** for all passwords/tokens
+5. Enable **CloudTrail** for full API audit logs
 
 ---
 
 ## 🏷️ Tagging Strategy
 
-All resources are tagged consistently for cost allocation, compliance, and management:
+All resources are tagged consistently across every module:
 
-| Tag Key | Example Value | Description |
-|---------|---------------|-------------|
-| `Environment` | `prod` / `staging` / `dev` | Deployment environment |
-| `Project` | `myapp` | Project or product identifier |
-| `Module` | `eks` / `vpc` / `rds` | Source Terraform module |
-| `ManagedBy` | `Terraform` | IaC tool identifier |
-| `Owner` | `platform-team` | Responsible team or person |
-| `CostCenter` | `engineering` | Billing/cost allocation code |
-| `CreatedDate` | `2026-06-24` | ISO-8601 creation date |
-
-### Tag Example (HCL)
+| Tag | Example | Purpose |
+|-----|---------|---------|
+| `Environment` | `prod` / `staging` / `dev` | Cost allocation by env |
+| `Project` | `myapp` | Project identifier |
+| `Module` | `eks` / `rds` / `vpc` | Source Terraform module |
+| `ManagedBy` | `Terraform` | IaC ownership |
+| `Owner` | `platform-team` | Responsible team |
+| `CostCenter` | `engineering` | Finance allocation |
+| `CreatedDate` | `2026-06-24` | Audit trail |
 
 ```hcl
+# Applied in every module's examples/*/main.tf
 tags = {
-  Environment = "production"
-  Project     = "myapp"
-  Module      = "rds"
+  Environment = var.environment
+  Project     = var.project
+  Module      = "eks"
   ManagedBy   = "Terraform"
   Owner       = "platform-team"
   CostCenter  = "engineering"
@@ -505,73 +433,51 @@ tags = {
 
 ## 💰 Cost Estimates
 
-> All estimates are for **us-east-1**. Actual costs vary by region, traffic, and usage.
+> Region: **us-east-1** · On-Demand pricing · Estimates only.
 
-### EKS Cluster
+| Module | Key Resources | Est. / Month |
+|--------|--------------|-------------|
+| VPC | NAT Gateways (3×) + data transfer | ~$100 |
+| EKS | Control plane + 6 nodes (`t3.medium`/`t3.large`) | ~$335 |
+| RDS | `db.t3.small` Multi-AZ + 100 GB gp3 | ~$240 |
+| Jenkins | `t3.large` EC2 + 50 GB gp3 | ~$70 |
+| Monitoring | CloudWatch + SNS | ~$5 |
+| S3 & IAM | Storage + requests | ~$5 |
+| **Total (full stack)** | | **~$755/month** |
 
-| Component | Type | Est. Cost/Month |
-|-----------|------|----------------|
-| EKS Control Plane | Managed | $73.00 |
-| System Nodes (3 × `t3.medium`) | EC2 On-Demand | ~$50.00 |
-| App Nodes (3 × `t3.large`) | EC2 On-Demand | ~$150.00 |
-| NAT Gateway | Per hour + data | ~$32.00 |
-| CloudWatch Logs | Ingestion + storage | ~$10.00 |
-| EBS Volumes | gp3 storage | ~$20.00 |
-| **Minimum Total** | | **~$335/month** |
-
-### VPC + Networking
-
-| Component | Est. Cost/Month |
-|-----------|----------------|
-| VPC, Subnets, Route Tables | Free |
-| NAT Gateway | ~$32.00 |
-| Data Transfer | ~$10.00 |
-| **Total** | **~$42/month** |
-
-### RDS (MySQL, Multi-AZ)
-
-| Component | Est. Cost/Month |
-|-----------|----------------|
-| `db.t3.small` Multi-AZ | ~$200.00 |
-| Storage (100 GB gp3) | ~$25.00 |
-| Automated Backup Storage | ~$10.00 |
-| Data Transfer | ~$5.00 |
-| **Total** | **~$240/month** |
-
-💡 **Tip**: Use **Reserved Instances** (1-year, no upfront) for 30–40% savings on stable workloads.
+💡 **Save 30–40%** with Reserved Instances (1-year, no upfront) on EKS nodes and RDS.
+💡 **Dev/staging cost**: use `single_nat_gateway = true`, smaller instance classes, skip read replicas.
 
 ---
 
 ## 🔒 Security Best Practices
 
-### Network Security
-- All compute (EKS nodes, RDS) runs in **private subnets** — no direct internet exposure
-- Security groups follow **least privilege**: only required ports, source-scoped rules
-- **VPC Flow Logs** enabled for traffic auditing
-- **NACLs** as an additional stateless defence layer
+### Network
+- All compute (EKS nodes, RDS, Jenkins) in **private subnets**
+- ALB/NLB in public subnets as the only internet-facing layer
+- **VPC Flow Logs** → CloudWatch for traffic auditing
+- Security groups: least-privilege, source-scoped ingress rules
 
-### Data Security
-- **KMS encryption** at rest for EBS, RDS, and CloudWatch Logs
-- **TLS in transit** enforced for RDS connections (`require_ssl` parameter)
-- **S3 bucket versioning** and object-level logging for state files
-- **DynamoDB state lock** to prevent concurrent Terraform runs
+### Data
+- **KMS encryption** at rest — EBS, RDS, S3, CloudWatch Logs
+- **TLS in transit** — RDS `require_ssl`, S3 HTTPS-only bucket policy
+- **S3 versioning** + DynamoDB state lock for Terraform state
 
-### Identity & Access
-- **IRSA (IAM Roles for Service Accounts)** — no static credentials in pods
-- **OIDC federation** between EKS and IAM
-- IAM roles use **condition keys** to scope to specific namespaces/service accounts
-- Avoid `AdministratorAccess`; use scoped policies per module
+### Identity
+- **IRSA** — fine-grained IAM-to-pod bindings, no node-level credentials
+- **IMDSv2** enforced on Jenkins EC2 (no legacy metadata)
+- No `AdministratorAccess` — scoped policies per module
 
-### Secrets Management
+### Secrets
 ```bash
-# Store secrets in AWS Secrets Manager, not in .tfvars
+# Never put passwords in terraform.tfvars
 aws secretsmanager create-secret \
-  --name "myapp/rds/password" \
+  --name "myapp/rds/master-password" \
   --secret-string "$(openssl rand -base64 32)"
 
 # Reference in Terraform
-data "aws_secretsmanager_secret_version" "rds_password" {
-  secret_id = "myapp/rds/password"
+data "aws_secretsmanager_secret_version" "rds_pwd" {
+  secret_id = "myapp/rds/master-password"
 }
 ```
 
@@ -579,249 +485,90 @@ data "aws_secretsmanager_secret_version" "rds_password" {
 
 ## 🛠️ Troubleshooting
 
-### Common Issues
+### Common Errors
 
-#### `Error: configuring Terraform AWS Provider: no valid credential sources`
-```bash
-# Verify credentials are set
-aws sts get-caller-identity
+| Error | Fix |
+|-------|-----|
+| `no valid credential sources` | Run `aws configure` or `export AWS_PROFILE=<name>` |
+| `Subnet must be in at least 2 AZs` | Ensure `subnet_ids` spans 2+ AZs |
+| `DBSubnetGroupNotFoundFault` | Deploy VPC + RDS module in same region; check subnet group |
+| `state lock` stuck | `terraform force-unlock <LOCK_ID>` |
+| `UnauthorizedOperation` | Add missing IAM action to your role policy |
 
-# Re-configure if needed
-aws configure
-# or
-export AWS_PROFILE=your-profile
-```
-
-#### `Error: creating EKS Cluster: InvalidParameterException: Subnet must be in at least 2 different AZs`
-```hcl
-# Ensure subnet_ids spans 2+ AZs in your module call
-subnet_ids = [
-  "subnet-aaa111",  # us-east-1a
-  "subnet-bbb222",  # us-east-1b
-  "subnet-ccc333",  # us-east-1c
-]
-```
-
-#### `Error: creating DB Instance: DBSubnetGroupNotFoundFault`
-```bash
-# Verify the subnet group exists
-aws rds describe-db-subnet-groups --region us-east-1
-```
-
-#### Terraform state lock stuck
-```bash
-# List and remove a stuck lock (replace LOCK_ID)
-terraform force-unlock LOCK_ID
-```
-
-### Debug Logging
+### Debug Commands
 
 ```bash
-# Enable verbose Terraform logging
+# Verbose Terraform logging
 export TF_LOG=DEBUG
-terraform plan 2>&1 | tee terraform-debug.log
+terraform plan 2>&1 | tee debug.log
 
-# Check CloudWatch logs for EKS control plane
-aws logs describe-log-groups --log-group-name-prefix "/aws/eks"
+# EKS cluster health
+aws eks describe-cluster --name <name> --region us-east-1
+kubectl get nodes -o wide
 
-# Inspect current Terraform state
+# RDS status
+aws rds describe-db-instances --db-instance-identifier <id>
+
+# Active CloudWatch alarms
+aws cloudwatch describe-alarms --state-value ALARM
+
+# Terraform state inspection
 terraform state list
 terraform state show aws_eks_cluster.main
-```
-
-### Useful AWS CLI Commands
-
-```bash
-# Check EKS cluster status
-aws eks describe-cluster --name my-cluster --region us-east-1
-
-# Update kubeconfig after EKS deploy
-aws eks update-kubeconfig --name my-cluster --region us-east-1
-
-# Check RDS instance status
-aws rds describe-db-instances --db-instance-identifier my-db
-
-# List CloudWatch alarms
-aws cloudwatch describe-alarms --state-value ALARM
 ```
 
 ---
 
 ## 🗺️ Roadmap
 
-### Q3 2026 (July – September)
-- [ ] ✅ Complete Jenkins CI/CD module (`feature/jenkins-cicd`)
-- [ ] 🔐 S3 & IAM module with bucket policies and cross-account replication
-- [ ] 📊 Monitoring module: CloudWatch dashboards + Dynatrace agent
-- [ ] 🧪 Automated `terratest` integration tests for VPC, EKS, RDS
+### Q3 2026
+- [ ] GitHub Actions CI — `terraform validate` + `tflint` on every PR
+- [ ] `terratest` integration tests for VPC, EKS, RDS
+- [ ] Karpenter node auto-provisioner module (replaces Cluster Autoscaler)
+- [ ] Multi-region DR example (primary + failover)
 
-### Q4 2026 (October – December)
-- [ ] 🌍 Multi-region DR (disaster recovery) example
-- [ ] 🔁 GitHub Actions CI pipeline for `terraform validate` + `tflint`
-- [ ] 📦 Terraform Registry module publishing
-- [ ] 💸 AWS Cost Anomaly Detection integration
-- [ ] 🔑 AWS Config + Security Hub integration for compliance checks
+### Q4 2026
+- [ ] Terraform Registry module publishing
+- [ ] AWS Config + Security Hub compliance checks
+- [ ] AWS Cost Anomaly Detection integration
+- [ ] ElastiCache (Redis) module
 
-### Future Ideas
-- Atlantis or Terraform Cloud remote execution
-- Crossplane integration for GitOps-native infra management
-- Service mesh (AWS App Mesh / Istio) module
-- Karpenter node auto-provisioner for EKS
-
----
-
-## 📖 Documentation
-
-### In This Repository
-| Document | Location |
-|----------|----------|
-| Master Overview | `master` branch → `README.md` (this file) |
-| VPC Guide | `feature/vpc` branch → `IMPLEMENTATION_GUIDE.md` |
-| EKS Guide | `feature/eks` branch → `IMPLEMENTATION_GUIDE.md` |
-| RDS Guide | `feature/rds` branch → `IMPLEMENTATION_GUIDE.md` |
-| Changelog | `master` branch → `CHANGELOG.md` |
-| Contributing | `master` branch → `CONTRIBUTING.md` |
-
-### External Resources
-- [AWS EKS Best Practices](https://aws.github.io/aws-eks-best-practices/)
-- [AWS RDS Documentation](https://docs.aws.amazon.com/rds/)
-- [Terraform AWS Provider Docs](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
-- [AWS Well-Architected Framework](https://aws.amazon.com/architecture/well-architected/)
-- [Kubernetes Documentation](https://kubernetes.io/docs/)
+### Future
+- Atlantis / Terraform Cloud for GitOps-style plan & apply
+- Service mesh module (AWS App Mesh or Istio)
+- Crossplane integration
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Here's how to get involved:
+1. Fork the repo and create a branch: `git checkout -b feature/my-change`
+2. Make changes, then validate:
+   ```bash
+   terraform fmt -recursive .
+   terraform validate
+   ```
+3. Commit using [Conventional Commits](https://www.conventionalcommits.org/):
+   ```
+   feat: Add ElastiCache module
+   fix: Correct RDS subnet variable default
+   docs: Update EKS IRSA section
+   ```
+4. Open a PR against `master`
 
-### Before You Start
-1. Fork the repository
-2. Create a branch: `git checkout -b feature/my-improvement`
-3. Read `CONTRIBUTING.md` for code style and review guidelines
-
-### Development Workflow
-
-```bash
-# After making changes
-terraform validate
-terraform fmt -check -recursive .
-tflint --recursive                  # Install: brew install tflint
-
-# Commit with conventional messages
-git commit -m "feat: Add ElastiCache module skeleton"
-git commit -m "fix: Correct RDS multi-AZ variable default"
-git commit -m "docs: Improve EKS IRSA section in README"
-
-# Push and open a PR
-git push origin feature/my-improvement
-```
-
-### Commit Message Format
-
-```
-<type>(<scope>): <subject>
-
-<body>            # Optional: explain why, not what
-
-<footer>          # Optional: closes #123, breaking changes
-```
-
-**Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`
-
----
-
-## 🎯 Terraform Best Practices
-
-### Code Quality
-- ✅ Always run `terraform fmt` before committing
-- ✅ Run `terraform validate` in CI before merge
-- ✅ Add `description` to every variable and output
-- ✅ Use `validation {}` blocks to catch bad inputs early
-- ✅ Pin provider versions in `terraform.tf`
-
-### State Management
-- ✅ Use **remote state** (S3 backend + DynamoDB lock)
-- ✅ One state file per environment (`dev.tfstate`, `prod.tfstate`)
-- ✅ Never commit `.tfstate` files to git
-- ✅ Enable **S3 versioning** on your state bucket
-
-### AWS Standards
-- ✅ Multi-AZ for all stateful resources (RDS, ElastiCache)
-- ✅ Encryption at rest and in transit everywhere
-- ✅ Use private subnets for all compute and data tiers
-- ✅ CloudTrail + Config enabled in all accounts
-- ✅ Tag every resource using the standard tag set
-
----
-
-## 🆘 Support
-
-### Getting Help
-
-1. **Read the docs first**: `IMPLEMENTATION_GUIDE.md` in the relevant branch
-2. **Enable debug logging**: `TF_LOG=DEBUG terraform plan`
-3. **Check existing issues**: [GitHub Issues](https://github.com/sujithp28/terraform-aws-infrastructure/issues)
-4. **Open a new issue** with the template below
-
-### Bug Report Template
-
-```markdown
-## Description
-Brief summary of the problem.
-
-## Expected Behaviour
-What should happen.
-
-## Actual Behaviour
-What actually happens (include full error output).
-
-## Steps to Reproduce
-1. `git checkout feature/rds`
-2. `cd examples/rds`
-3. `terraform apply`
-4. Error appears: ...
-
-## Environment
-- Terraform: vX.X.X (`terraform version`)
-- AWS CLI: vX.X.X (`aws --version`)
-- AWS Region: us-east-1
-- Module: rds / eks / vpc
-
-## Additional Context
-Sanitised logs, screenshots, etc.
-```
-
----
-
-## 📝 Changelog
-
-See [CHANGELOG.md](./CHANGELOG.md) for the full version history.
-
-### Latest: v1.2.0 — 2026-06-24
-- 📄 Master README overhauled: security section, troubleshooting guide, roadmap, improved architecture diagram
-
-### v1.1.0 — 2026-06-23
-- ✅ RDS module production-ready (MySQL & PostgreSQL, Multi-AZ, read replicas, CloudWatch alarms)
-- ✅ Complete RDS examples and `IMPLEMENTATION_GUIDE.md`
-
-### v1.0.0 — 2026-06-18
-- ✅ EKS module production-ready with OIDC/IRSA and managed add-ons
-- ✅ VPC module with multi-AZ support
-- ✅ Security best practices throughout
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for full guidelines.
 
 ---
 
 ## 👤 Author
 
-**Sujith** — Senior DevOps Engineer
-Passionate about Infrastructure as Code, Kubernetes, cloud-native architecture, and automation.
+**Sujith** — Senior DevOps / Platform Engineer
+Specialising in Terraform, Kubernetes, AWS, and cloud-native automation.
 
 <div align="center">
 
-[![GitHub](https://img.shields.io/badge/GitHub-sujithp28-black?style=flat&logo=github)](https://github.com/sujithp28)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Sujith%20P-blue?style=flat&logo=linkedin)](https://linkedin.com/in/sujithp)
-[![Email](https://img.shields.io/badge/Email-Contact-red?style=flat&logo=gmail)](mailto:sujith@example.com)
+[![GitHub](https://img.shields.io/badge/GitHub-sujithp28-black?style=for-the-badge&logo=github)](https://github.com/sujithp28)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/sujithp)
 
 </div>
 
@@ -829,23 +576,14 @@ Passionate about Infrastructure as Code, Kubernetes, cloud-native architecture, 
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see [LICENSE](./LICENSE) for details.
-
----
-
-## 🙏 Acknowledgments
-
-- AWS for comprehensive documentation and managed services
-- HashiCorp for Terraform and the AWS provider
-- Kubernetes and CNCF community for standards and tooling
-- All contributors and users who provide feedback
+MIT License — see [LICENSE](./LICENSE) for details.
 
 ---
 
 <div align="center">
 
-**⭐ Found this useful? Star the repo — it helps others discover it!**
+**⭐ Star the repo if this helped you — it makes it easier for others to find!**
 
-**Last Updated**: 2026-06-24 | **Terraform**: >= 1.0 | **AWS Provider**: >= 5.0
+`master` · 6 modules · Terraform ≥ 1.0 · AWS Provider ≥ 5.0 · Last updated 2026-06-24
 
 </div>
