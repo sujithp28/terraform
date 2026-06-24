@@ -10,7 +10,6 @@
 ![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
 ![Jenkins](https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 ![Modules](https://img.shields.io/badge/Modules-6%20Complete-brightgreen?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge)
 
@@ -35,7 +34,6 @@
 - [Security Best Practices](#-security-best-practices)
 - [Troubleshooting](#-troubleshooting)
 - [Roadmap](#-roadmap)
-- [Contributing](#-contributing)
 - [Author](#-author)
 
 ---
@@ -108,8 +106,6 @@ The `master` branch holds this overview. Every module lives in its own `feature/
 |------|---------|
 | `README.md` | This overview (you are here) |
 | `CHANGELOG.md` | Full version history |
-| `CONTRIBUTING.md` | Contribution guidelines |
-| `LICENSE` | MIT License |
 | `.gitignore` | Ignores state, secrets, editor files |
 
 ---
@@ -132,7 +128,7 @@ The `master` branch holds this overview. Every module lives in its own `feature/
 | Date | Version | Change |
 |------|---------|--------|
 | 2026-06-24 | v1.3.0 | ✅ All 6 modules complete — Jenkins, Monitoring, S3 & IAM pushed |
-| 2026-06-24 | v1.2.0 | 📄 Master README overhaul, `.gitignore`, `CONTRIBUTING.md`, `CHANGELOG.md` |
+| 2026-06-24 | v1.2.0 | 📄 Master README overhaul, `.gitignore`, `CHANGELOG.md` added |
 | 2026-06-23 | v1.1.0 | ✅ RDS module — MySQL & PostgreSQL, Multi-AZ, alarms, examples |
 | 2026-06-18 | v1.0.0 | ✅ VPC + EKS modules — OIDC/IRSA, managed add-ons, security hardening |
 
@@ -257,6 +253,7 @@ The `master` branch holds this overview. Every module lives in its own `feature/
 - ✅ AWS CLI configured (`aws configure` or environment variables)
 
 ### Recommended Deployment Order
+
 Deploy modules in this order to satisfy dependencies:
 
 ```
@@ -278,7 +275,6 @@ Deploy modules in this order to satisfy dependencies:
 git clone https://github.com/sujithp28/terraform-aws-infrastructure.git
 cd terraform-aws-infrastructure
 
-# Configure AWS credentials
 aws configure
 aws sts get-caller-identity   # Verify
 ```
@@ -287,44 +283,38 @@ aws sts get-caller-identity   # Verify
 
 ```bash
 git checkout feature/vpc
-cat IMPLEMENTATION_GUIDE.md         # Read before deploying
+cat IMPLEMENTATION_GUIDE.md
 
 cd examples/vpc
 cp terraform.tfvars.example terraform.tfvars
-vim terraform.tfvars                # Set environment, project, CIDRs
+vim terraform.tfvars
 
-terraform init
-terraform validate
-terraform plan
-terraform apply
-
-terraform output                    # Save vpc_id and subnet_ids for next steps
+terraform init && terraform validate && terraform plan && terraform apply
+terraform output   # Save vpc_id and subnet_ids for next steps
 ```
 
 ### Step 3 — Deploy Remaining Modules
-
-Each module follows the same pattern:
 
 ```bash
 git checkout feature/<module-name>
 cat IMPLEMENTATION_GUIDE.md
 cd examples/<module-name>
 cp terraform.tfvars.example terraform.tfvars
-vim terraform.tfvars        # Paste vpc_id / subnet_ids from previous step
+vim terraform.tfvars   # Paste vpc_id / subnet_ids from VPC output
 terraform init && terraform plan && terraform apply
 ```
 
 ### Step 4 — Verify
 
 ```bash
-# EKS — configure kubectl
+# EKS
 aws eks update-kubeconfig --name <cluster-name> --region us-east-1
 kubectl get nodes
 
-# RDS — check instance
-aws rds describe-db-instances --db-instance-identifier <identifier>
+# RDS
+aws rds describe-db-instances --db-instance-identifier <id>
 
-# Jenkins — get initial password
+# Jenkins — initial admin password
 aws ssm start-session --target <instance-id>
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ```
@@ -417,7 +407,6 @@ All resources are tagged consistently across every module:
 | `CreatedDate` | `2026-06-24` | Audit trail |
 
 ```hcl
-# Applied in every module's examples/*/main.tf
 tags = {
   Environment = var.environment
   Project     = var.project
@@ -446,26 +435,26 @@ tags = {
 | **Total (full stack)** | | **~$755/month** |
 
 💡 **Save 30–40%** with Reserved Instances (1-year, no upfront) on EKS nodes and RDS.
-💡 **Dev/staging cost**: use `single_nat_gateway = true`, smaller instance classes, skip read replicas.
+💡 **Dev/staging**: use `single_nat_gateway = true`, smaller instances, skip read replicas.
 
 ---
 
 ## 🔒 Security Best Practices
 
 ### Network
-- All compute (EKS nodes, RDS, Jenkins) in **private subnets**
+- All compute (EKS nodes, RDS, Jenkins) deployed in **private subnets**
 - ALB/NLB in public subnets as the only internet-facing layer
-- **VPC Flow Logs** → CloudWatch for traffic auditing
-- Security groups: least-privilege, source-scoped ingress rules
+- **VPC Flow Logs** → CloudWatch for full traffic auditing
+- Security groups: least-privilege, source-scoped ingress rules only
 
 ### Data
 - **KMS encryption** at rest — EBS, RDS, S3, CloudWatch Logs
 - **TLS in transit** — RDS `require_ssl`, S3 HTTPS-only bucket policy
-- **S3 versioning** + DynamoDB state lock for Terraform state
+- **S3 versioning** + DynamoDB state lock for Terraform state integrity
 
 ### Identity
 - **IRSA** — fine-grained IAM-to-pod bindings, no node-level credentials
-- **IMDSv2** enforced on Jenkins EC2 (no legacy metadata)
+- **IMDSv2** enforced on Jenkins EC2 (blocks legacy metadata abuse)
 - No `AdministratorAccess` — scoped policies per module
 
 ### Secrets
@@ -475,7 +464,6 @@ aws secretsmanager create-secret \
   --name "myapp/rds/master-password" \
   --secret-string "$(openssl rand -base64 32)"
 
-# Reference in Terraform
 data "aws_secretsmanager_secret_version" "rds_pwd" {
   secret_id = "myapp/rds/master-password"
 }
@@ -485,36 +473,24 @@ data "aws_secretsmanager_secret_version" "rds_pwd" {
 
 ## 🛠️ Troubleshooting
 
-### Common Errors
-
 | Error | Fix |
 |-------|-----|
-| `no valid credential sources` | Run `aws configure` or `export AWS_PROFILE=<name>` |
+| `no valid credential sources` | Run `aws configure` or export `AWS_PROFILE` |
 | `Subnet must be in at least 2 AZs` | Ensure `subnet_ids` spans 2+ AZs |
-| `DBSubnetGroupNotFoundFault` | Deploy VPC + RDS module in same region; check subnet group |
+| `DBSubnetGroupNotFoundFault` | Deploy VPC first; check subnet group exists |
 | `state lock` stuck | `terraform force-unlock <LOCK_ID>` |
 | `UnauthorizedOperation` | Add missing IAM action to your role policy |
 
-### Debug Commands
-
 ```bash
-# Verbose Terraform logging
+# Debug mode
 export TF_LOG=DEBUG
 terraform plan 2>&1 | tee debug.log
 
-# EKS cluster health
+# Check resource states
 aws eks describe-cluster --name <name> --region us-east-1
-kubectl get nodes -o wide
-
-# RDS status
 aws rds describe-db-instances --db-instance-identifier <id>
-
-# Active CloudWatch alarms
 aws cloudwatch describe-alarms --state-value ALARM
-
-# Terraform state inspection
 terraform state list
-terraform state show aws_eks_cluster.main
 ```
 
 ---
@@ -524,39 +500,14 @@ terraform state show aws_eks_cluster.main
 ### Q3 2026
 - [ ] GitHub Actions CI — `terraform validate` + `tflint` on every PR
 - [ ] `terratest` integration tests for VPC, EKS, RDS
-- [ ] Karpenter node auto-provisioner module (replaces Cluster Autoscaler)
-- [ ] Multi-region DR example (primary + failover)
+- [ ] Karpenter node auto-provisioner module
+- [ ] Multi-region DR example
 
 ### Q4 2026
 - [ ] Terraform Registry module publishing
 - [ ] AWS Config + Security Hub compliance checks
 - [ ] AWS Cost Anomaly Detection integration
 - [ ] ElastiCache (Redis) module
-
-### Future
-- Atlantis / Terraform Cloud for GitOps-style plan & apply
-- Service mesh module (AWS App Mesh or Istio)
-- Crossplane integration
-
----
-
-## 🤝 Contributing
-
-1. Fork the repo and create a branch: `git checkout -b feature/my-change`
-2. Make changes, then validate:
-   ```bash
-   terraform fmt -recursive .
-   terraform validate
-   ```
-3. Commit using [Conventional Commits](https://www.conventionalcommits.org/):
-   ```
-   feat: Add ElastiCache module
-   fix: Correct RDS subnet variable default
-   docs: Update EKS IRSA section
-   ```
-4. Open a PR against `master`
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for full guidelines.
 
 ---
 
@@ -571,12 +522,6 @@ Specialising in Terraform, Kubernetes, AWS, and cloud-native automation.
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/sujithp)
 
 </div>
-
----
-
-## 📄 License
-
-MIT License — see [LICENSE](./LICENSE) for details.
 
 ---
 
